@@ -115,7 +115,7 @@
         "displayName": "StorageAccount"
       },
       "type": "Microsoft.Storage/storageAccounts",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "apiVersion": "[variables('apiVersionStorage')]",
       "properties": {
         "accountType": "Standard_LRS"
@@ -387,7 +387,7 @@
         "name": "f5Copy"
       },
       "dependsOn": [
-        "bigipDeployTemplate"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('bigipNamePrefix'), copyIndex(1))]"
       ],
       "properties": {
         "publisher": "Microsoft.Azure.Extensions",
