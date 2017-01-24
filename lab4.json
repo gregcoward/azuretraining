@@ -323,7 +323,7 @@
       "name": "[concat(variables('bigipNamePrefix'),copyindex(1))]",
       "location":  "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('bigipNamePrefix'),copyIndex(1)))]"
+        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicNamePrefix'),copyIndex(1)))]"
       ],
       "copy": {
         "count": "[variables('numberOfInstances')]",
@@ -342,7 +342,7 @@
           "vmSize": "[parameters('instanceType')]"
         },
         "osProfile": {
-          "computerName": "[concat(variables('bigipNamePrefix'),copyindex())]",
+          "computerName": "[concat(variables('bigipNamePrefix'),copyindex(1))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
