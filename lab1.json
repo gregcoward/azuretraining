@@ -40,9 +40,10 @@
     "subnet1Ref": "[concat(variables('vnetID'),'/subnets/', variables('subnet1Name'))]",
     "subnet1Prefix": "10.0.1.0/24",
     "baseUrl": "https://raw.githubusercontent.com/gregcoward/azuretraining/master/",
-    "scriptFileName": "webprep.ps1",
-    "scriptUrl": "[concat(variables('baseUrl'), variables('scriptFileName'))]",
+    "webScriptFileName": "webprep.ps1",
+    "webScriptUrl": "[concat(variables('baseUrl'), variables('webScriptFileName'))]",
     "publicIPAddressName": "PublicIP",
+    "publicIPID": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]",
     "vmNicName": "[concat(parameters('vmName'),'-nic')]",
     "vmSize": "Standard_A1",
     "vmImageSKU": "2012-R2-Datacenter",
@@ -105,7 +106,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
+                "id": "[variables('publicIPID')]"
               },
               "subnet": {
                 "id": "[variables('subnet1Ref')]"
@@ -160,7 +161,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('vmName'),'/WinRMCustomScriptExtension')]",
+      "name": "[concat(parameters('vmName'),'/iisScript')]",
       "apiVersion": "[variables('apiVersionCompute')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
@@ -172,9 +173,9 @@
         "typeHandlerVersion": "1.4",
         "settings": {
           "fileUris": [
-            "[variables('scriptUrl')]"
+            "[variables('webScriptUrl')]"
           ],
-          "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file ', variables('scriptFileName'))]"
+          "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -file ', variables('webScriptFileName'))]"
         }
       }
     }
