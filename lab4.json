@@ -104,7 +104,7 @@
     "f5ImagePublisher": "f5-networks",
     "f5ImageOffer": "f5-big-ip-hourly",
     "singleQuote": "'",
-    "f5CloudLibsTag": "F5Networks-f5-cloud-libs-236d600.tar.gz",
+    "f5CloudLibsTag": "F5Networks-f5-cloud-libs-v1.0.0-0-g9f85e95.tar.gz",
     "f5CloudLibsTagUrl": "[concat(variables('baseUrl'),'/',variables('f5CloudLibsTag'))]",
     "commandArgs": "[concat(' -p ',variables('appPort'),' -e ', variables('entityId'),' -d ', parameters('authFqdn'),' -a ', parameters('authIp'),' -f ', parameters('domainfqdn'),' -c ', parameters('sslCert'),' -w ', parameters('sslPswd'),' -x ', parameters('adminPassword'),' -u ', variables('iappUrl'))]"
   },
@@ -323,7 +323,9 @@
       "name": "[concat(variables('bigipNamePrefix'),copyindex(1))]",
       "location":  "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicNamePrefix'),copyIndex(1)))]"
+        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('nicNamePrefix'),copyIndex(1)))]",
+        "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]"
       ],
       "copy": {
         "count": "[variables('numberOfInstances')]",
