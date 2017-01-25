@@ -207,6 +207,7 @@
                 "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('loadBalancerName')), '/probes/lbprobeHTTPS', '1')]"
               },
               "protocol": "Tcp",
+              "loadDistribution": "SourceIP",
               "frontendPort": 443,
               "backendPort": 6443,
               "idleTimeoutInMinutes": 15
