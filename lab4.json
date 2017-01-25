@@ -81,7 +81,7 @@
     "dnsNameForPublicIP": "[concat('f5', uniqueString(resourceGroup().id))]",
     "entityId": "[concat('https://',trim(parameters('dnsFqdn')),'/idp/f5/')]",
     "loadBalancerName": "[concat(variables('bigipNamePrefix'),'-alb')]",
-    "baseUrl": "https://raw.githubusercontent.com/gregcoward/o365Federation/master",
+    "baseUrl": "https://raw.githubusercontent.com/gregcoward/azuretraining/master/",
     "availabilitySetName": "[concat(variables('bigipNamePrefix'),'-avset')]",
     "appPort": 6443,
     "newStorageAccountName": "[concat(tolower(variables('dnsNameForPublicIP')),'stor')]",
