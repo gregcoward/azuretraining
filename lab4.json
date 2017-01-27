@@ -409,13 +409,21 @@
     }
   ],
   "outputs": {
-    "GUI-URL": {
+    "BIG-IP1 GUI-URL": {
       "type": "string",
       "value": "[concat('https://',reference(variables('publicIpId')).dnsSettings.fqdn,':8443')]"
     },
-    "SSH-URL": {
+    "BIG-IP1 SSH-URL": {
       "type": "string",
       "value": "[concat(reference(variables('publicIpId')).dnsSettings.fqdn,' ',8022)]"
+    },
+    "BIG-IP2 GUI-URL": {
+      "type": "string",
+      "value": "[concat('https://',reference(variables('publicIpId')).dnsSettings.fqdn,':8444')]"
+    },
+    "BIG-IP2 SSH-URL": {
+      "type": "string",
+      "value": "[concat(reference(variables('publicIpId')).dnsSettings.fqdn,' ',8023)]"
     }
   }
   }
