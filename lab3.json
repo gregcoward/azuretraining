@@ -325,7 +325,7 @@
       },
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
       "name": "[concat(variables('f5LoadBalancerName'),'/sshmgt', copyIndex(1))]",
-      "location":  "[resourceGroup().location]",
+      "location": "[resourceGroup().location]",
       "copy": {
         "name": "f5Copy",
         "count": "[variables('numberOfF5s')]"
@@ -388,7 +388,7 @@
       "apiVersion": "[variables('apiVersionCompute')]",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(parameters('f5Name'),copyindex(1))]",
-      "location":  "[resourceGroup().location]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[concat('Microsoft.Network/networkInterfaces/',concat(variables('f5NicName'),copyIndex(1)))]"
       ],
@@ -446,5 +446,21 @@
     }
   ],
   "outputs": {
+    "BIG-IP1 GUI-URL": {
+      "type": "string",
+      "value": "[concat('https://',reference(variables('publicIpId')).dnsSettings.fqdn,':8443')]"
+    },
+    "BIG-IP1 SSH-URL": {
+      "type": "string",
+      "value": "[concat(reference(variables('publicIpId')).dnsSettings.fqdn,' ',8022)]"
+    },
+    "BIG-IP2 GUI-URL": {
+      "type": "string",
+      "value": "[concat('https://',reference(variables('publicIpId')).dnsSettings.fqdn,':8444')]"
+    },
+    "BIG-IP2 SSH-URL": {
+      "type": "string",
+      "value": "[concat(reference(variables('publicIpId')).dnsSettings.fqdn,' ',8023)]"
     }
+  }
 }
