@@ -30,24 +30,28 @@
     },
     "authFqdn": {
       "type": "string",
+      "defaultValue": "dc.f5demo.net",
       "metadata": {
         "description": "Specify your Active Directory domain controller FQDN.
       }
     },
     "authIp": {
       "type": "string",
+      "defaultValue": "172.16.60.5",
       "metadata": {
         "description": "Specify your Active Directory domain controller IP."
       }
     },
     "domainFqdn": {
       "type": "string",
+      "defaultValue": "f5demo.net",      
       "metadata": {
         "description": "Specify the FQDN of the Active Directory deployment for your Office 365 users. This is the FQDN for your domain, such as example.com, rather than the FQDN for any specific host."
       }
     },
     "dnsFqdn": {
       "type": "string",
+      "defaultValue": "access.f5demo.net",      
       "metadata": {
         "description": "The public federation endpoint FQDN"
       }
