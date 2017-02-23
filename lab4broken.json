@@ -173,7 +173,7 @@
         "displayName": "AzureLoadBalancer"
       },
       "dependsOn": [
-
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPName'))]"
       ],
       "location": "[resourceGroup().location]",
       "name": "[variables('loadBalancerName')]",
@@ -265,7 +265,7 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers/', variables('LoadBalancerName'))]"
+
       ],
       "properties": {
         "frontendIPConfiguration": {
