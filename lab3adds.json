@@ -1,1 +1,218 @@
-
+    {
+      "apiVersion": "2015-06-15",
+      "tags": {
+        "displayName": "AvailabilitySet"
+      },
+      "location": "[resourceGroup().location]",
+      "name": "[variables('f5AvailabilitySetName')]",
+      "type": "Microsoft.Compute/availabilitySets"
+    },
+    {
+      "apiVersion": "[variables('apiVersionNetwork')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]"
+      ],
+      "location": "[resourceGroup().location]",
+      "name": "[variables('f5LoadBalancerName')]",
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[concat('loadBalancerFrontEnd')]",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[concat(variables('publicIpId'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "loadBalancerBackEnd"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "Name": "APP1-HTTP",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('f5LoadBalancerName')), '/frontendIpConfigurations/loadBalancerFrontEnd')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('f5LoadBalancerName')), '/backendAddressPools/loadBalancerBackEnd')]"
+              },
+              "probe": {
+                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', variables('f5LoadBalancerName')), '/probes/lbprobeHTTP')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "idleTimeoutInMinutes": 15,
+              "loadDistribution": "SourceIP"
+            }
+          }
+        ],
+        "probes": [
+          {
+            "properties": {
+              "protocol": "Tcp",
+              "port": 80,
+              "intervalInSeconds": 15,
+              "numberOfProbes": 2
+            },
+            "name": "[concat('lbprobeHTTP')]"
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "tags": {
+        "displayName": "InboundNATRulesGUI"
+      },
+      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
+      "name": "[concat(variables('f5LoadBalancerName'),'/guimgt', copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "f5Copy",
+        "count": "[variables('numberOfF5s')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('f5LoadBalancerName'))]"
+      ],
+      "properties": {
+        "frontendIPConfiguration": {
+          "id": "[concat(variables('frontEndIPConfigID'))]"
+        },
+        "protocol": "tcp",
+        "frontendPort": "[copyIndex(8443)]",
+        "backendPort": 443,
+        "enableFloatingIP": false
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "tags": {
+        "displayName": "InboundNATRulesSSH"
+      },
+      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
+      "name": "[concat(variables('f5LoadBalancerName'),'/sshmgt', copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "f5Copy",
+        "count": "[variables('numberOfF5s')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('f5LoadBalancerName'))]"
+      ],
+      "properties": {
+        "frontendIPConfiguration": {
+          "id": "[concat(variables('frontEndIPConfigID'))]"
+        },
+        "protocol": "tcp",
+        "frontendPort": "[copyIndex(8022)]",
+        "backendPort": 22,
+        "enableFloatingIP": false
+      }
+    },
+    {
+      "apiVersion": "2015-05-01-preview",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(variables('f5NicName'), copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "f5Copy",
+        "count": "[variables('numberOfF5s')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+        "[concat(variables('f5LbId'),'/inboundNatRules/guimgt',copyIndex(1))]",
+        "[concat(variables('f5LbId'),'/inboundNatRules/sshmgt',copyIndex(1))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnet2Ref')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(variables('f5LbId'), '/backendAddressPools/', 'loadBalancerBackEnd')]"
+                }
+              ],
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[concat(variables('f5LbId'), '/inboundNatRules/', 'sshmgt',copyIndex(1))]"
+                },
+                {
+                  "id": "[concat(variables('f5LbId'), '/inboundNatRules/', 'guimgt',copyIndex(1))]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersionCompute')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('f5Name'),copyindex(1))]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/',concat(variables('f5NicName'),copyIndex(1)))]"
+      ],
+      "copy": {
+        "count": "[variables('numberOfF5s')]",
+        "name": "f5Copy"
+      },
+      "plan": {
+        "name": "[variables('f5ImageSKU')]",
+        "publisher": "[variables('f5ImagePublisher')]",
+        "product": "[variables('f5ImageOffer')]"
+      },
+      "properties": {
+        "availabilitySet": {
+          "id": "[variables('f5AsId')]"
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('instanceType')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('f5Name'),copyindex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('f5ImagePublisher')]",
+            "offer": "[variables('f5ImageOffer')]",
+            "sku": "[variables('f5ImageSKU')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat('osdisk',parameters('f5Name'),copyindex(1))]",
+            "vhd": {
+              "uri": "[concat('http://',parameters('newStorageAccountName'),'.blob.core.windows.net/',parameters('newStorageAccountName'),'/f5Disk',copyindex(1),'.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('f5NicName'),copyindex(1)))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('http://',parameters('newstorageAccountName'),'.blob.core.windows.net')]"
+          }
+        }
+      }
+    }
