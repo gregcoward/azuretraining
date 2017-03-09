@@ -32,7 +32,7 @@
       "type": "string",
       "defaultValue": "dc.f5demo.net",
       "metadata": {
-        "description": "Specify your Active Directory domain controller FQDN."
+        "description": "Specify your Active Directory domain controller FQDN.
       }
     },
     "authIp": {
@@ -114,7 +114,7 @@
   },
   "resources": [
     {
-      "name": "[variables('newStorageAccountName')]",
+      "name": "[variables('newStorageAccountNames')]",
       "tags": {
         "displayName": "StorageAccount"
       },
@@ -269,7 +269,7 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers/', variables('LoadBalancerName'))]"
+
       ],
       "properties": {
         "frontendIPConfiguration": {
