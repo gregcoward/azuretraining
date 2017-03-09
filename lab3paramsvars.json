@@ -1,1 +1,49 @@
 
+  "parameters": {
+    "f5Name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the F5 BIG-IP"
+      }
+    },
+    "instanceType": {
+      "type": "string",
+      "defaultValue": "Standard_A4",
+      "metadata": {
+        "description": "The size of the Virtual Hardware Instance."
+      },
+      "allowedValues": [
+        "Standard_A3",
+        "Standard_A4",
+        "Standard_F4"
+      ]
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin username"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin password"
+      }
+    }
+  }
+  "variables": {
+    "numberOfVms": 2,
+    "subnet2Name": "external",
+    "subnet2Ref": "[concat(variables('vnetID'),'/subnets/', variables('subnet2Name'))]",
+    "subnet2Prefix": "10.0.2.0/24",
+    "f5ImageSKU": "f5-bigip-virtual-edition-1g-best-hourly",
+    "f5ImagePublisher": "f5-networks",
+    "f5ImageOffer": "f5-big-ip-hourly",
+    "numberOfF5s": 2,
+    "f5NicName": "[concat(parameters('f5Name'),'-nic')]",
+    "f5AvailabilitySetName": "[concat(parameters('f5Name'),'-avset')]",
+    "f5AsId": "[resourceId('Microsoft.Network/availabilitySets',variables('f5AvailabilitySetName'))]",
+    "f5LoadBalancerName": "[concat(parameters('f5Name'),'-alb')]",
+    "f5LbId": "[resourceId('Microsoft.Network/loadBalancers',variables('f5LoadBalancerName'))]",
+    "frontEndIPConfigID": "[concat(variables('f5LbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]"
+  }
