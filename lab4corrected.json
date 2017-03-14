@@ -252,7 +252,7 @@
         },
         "protocol": "tcp",
         "frontendPort": "[copyIndex(8443)]",
-        "backendPort": 443,
+        "backendPort": 8443,
         "enableFloatingIP": false
       }
     },
