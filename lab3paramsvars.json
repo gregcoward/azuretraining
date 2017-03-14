@@ -8,7 +8,7 @@
     },
     "instanceType": {
       "type": "string",
-      "defaultValue": "Standard_A4",
+      "defaultValue": "Standard_A3",
       "metadata": {
         "description": "The size of the Virtual Hardware Instance."
       },
